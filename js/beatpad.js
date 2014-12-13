@@ -19,46 +19,11 @@
 
   // Ugly hardcoded list of temporary URLs for songs we're demoing with!
   var playlist = [
-    {
-        songURL: "music/The%20Glitch%20Mob%20-%20We%20Can%20Make%20the%20World%20Stop.mp3",
-        analysisURL: "music/The%20Glitch%20Mob%20-%20We%20Can%20Make%20the%20World%20Stop.json"
-    },
-    {
-        songURL: "music/06%20J-Louis%20-%20LA%20Watts.mp3",
-        analysisURL: "music/06%20J-Louis%20-%20LA%20Watts.json"
-    },
-    {
-        songURL: "music/reckoner.mp3",
-        analysisURL: "music/reckoner.json"
-    },
-    // {
-    //     songURL: "music/lookOfLove.mp3",
-    //     analysisURL: "music/lookOfLove.json"
-    // },
-    {
-        songURL: "music/07%20IAMNOBODI%20-%20Soulection%20Anthem.mp3",
-        analysisURL: "music/07%20IAMNOBODI%20-%20Soulection%20Anthem.json"
-    },
-    {
-        songURL: "music/Sing.mp3",
-        analysisURL: "music/Sing.json"
-    },
-    {
-        songURL: "music/Summer.mp3",
-        analysisURL: "music/Summer.json"
-    },
-    // {
-    //     songURL: "music/SuperLove.mp3",
-    //     analysisURL: "music/SuperLove.json"
-    // },
-    {
-        songURL: "music/03%20The%20Sky%20Was%20Pink%20%28Holden%20Remix%29.mp3",
-        analysisURL: "music/03%20The%20Sky%20Was%20Pink%20%28Holden%20Remix%29.json"
-    },
-    {
-        songURL: "music/Moderat%20-%20This%20Time.mp3",
-        analysisURL: "music/Moderat%20-%20This%20Time.json"
-    },
+        {
+        songURL: "music/01 - The Paddington Frisk.mp3",
+        analysisURL: "music/01 - The Paddington Frisk.json"
+    }
+
   ];
 
   // Playlist state
@@ -445,7 +410,7 @@
 
     lights = new Lights({
       lagAdjustment: -0.025,
-      layoutURL: "data/grid32x16z.json",
+      layoutURL: "data/grid10x5z.json",
       onconnecting: function() {
           $('#ledStatus').text("Connecting to Fadecandy LED server...");
       },
