@@ -410,7 +410,8 @@
 
     lights = new Lights({
       lagAdjustment: -0.025,
-      layoutURL: "data/grid10x5z.json",
+      //layoutURL: "data/grid10x5z.json",
+      layoutURL: "data/shield.json",
       onconnecting: function() {
           $('#ledStatus').text("Connecting to Fadecandy LED server...");
       },

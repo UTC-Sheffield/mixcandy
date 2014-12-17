@@ -125,7 +125,7 @@ Lights.prototype._animationLoop = function() {
 
 Lights.prototype.doFrame = function() {
     // Main animation function, runs once per frame
-
+    
     this.frameTimestamp = new Date().getTime() * 1e-3;
 
     if (this.analysis && this.song) {
@@ -136,12 +136,6 @@ Lights.prototype.doFrame = function() {
 };
 
 Lights.prototype.followAnalysis = function() {
-    // Follow along with the music analysis in real-time. Fires off a beat() for
-    // each beat, and sets "this.mood" and "this.segment" according to the current position.
-
-    // NB: This could be much more efficient, but right now it's optimized to handle arbitrary
-    // seeking in a predictable way.
-
     var pos = this.song.pos() + this.lagAdjustment;
     var lastPos = this._songPosition;
     var beats = this.analysis.features.BEATS;
@@ -155,6 +149,7 @@ Lights.prototype.followAnalysis = function() {
             foundBeat = index;
         }
     }
+    
     if (foundBeat != null) {
         this.beat(foundBeat);
     }
@@ -177,19 +172,55 @@ Lights.prototype.followAnalysis = function() {
 };
 
 
-Lights.prototype.renderLights = function() {
-    // Big monolithic chunk of performance-critical code to render particles to the LED
-    // model, assemble a framebuffer, and send it out over WebSockets.
+Lights.prototype.aBeats = [];
 
-    /* if (analysis) {
-        this.particleLifespan = 1 * (60.0 / this.analysis.features.BPM);
-    } else {
-        this.particleLifespan = 1.0;
-        particle.intensity = 1.0 - age;
-    }*/
-    //var aColor = this.colors[p[2]  % this.colors.length];
-            
+Lights.prototype.beat = function(index) {
+    // Each beat adds a new color
+    this.aBeats.unshift([
+        Math.floor(Math.random()*256), 
+        Math.floor(Math.random()*256), 
+        Math.floor(Math.random()*256),
+        this.frameTimestamp,
+        0
+    ]);
     
+    this.aBeats = this.aBeats.slice(0, 10);
+    this.iBeatLength = (60.0 / this.analysis.features.BPM)
+};
+
+Lights.prototype.horizontal = function(aPoint) {
+    var aBeat = this.aBeats[aPoint[2]  % this.aBeats.length];
+    var r = aBeat[0];
+    var g = aBeat[1];
+    var b = aBeat[2];
+     
+    return [r, g, b];
+
+};
+
+Lights.prototype.horizontalTime = function(aPoint) {
+    var iRow = aPoint[2]  % this.aBeats.length;
+    var aBeat = this.aBeats[iRow];
+    var r = aBeat[0] * (10 - aBeat[4] ) / 10;
+    var g = aBeat[1] * (10 - aBeat[4] ) / 10;
+    var b = aBeat[2] * (10 - aBeat[4] ) / 10;
+     
+    return [r, g, b];
+};
+
+
+Lights.prototype.horizontalTimeCenter = function(aPoint) {
+    var aOut = [2,1,0,0,1,2];
+    var iRow = aOut[aPoint[2]]  % this.aBeats.length;
+    var aBeat = this.aBeats[iRow];
+    var r = aBeat[0] * (4 - aBeat[4] ) / 3;
+    var g = aBeat[1] * (4 - aBeat[4] ) / 3;
+    var b = aBeat[2] * (4 - aBeat[4] ) / 3;
+     
+    return [r, g, b];
+};
+
+Lights.prototype.renderLights = function() {    
     var layout = this.layout;
     var socket = this.ws;
     //var particles = this.particles;
@@ -201,83 +232,34 @@ Lights.prototype.renderLights = function() {
     }
 
     if (socket.bufferedAmount > packet.length) {
-        // The network is lagging, and we still haven't sent the previous frame.
-        // Don't flood the network, it will just make us laggy.
-        // If fcserver is running on the same computer, it should always be able
-        // to keep up with the frames we send, so we shouldn't reach this point.
         return;
     }
 
     // Dest position in our packet. Start right after the header.
     var dest = 4;
-
-    for (var led = 0; led < layout.length; led++) {
-        var p = layout[led].point;
-        //console.log("p =", p);
-        //console.log("this.colors =", this.colors);
-        if(this.colors.length > 0){
-            //var aColor = this.colors[p[2]  % this.colors.length];
-            var aColor = this.colors[Math.abs(p[2]-2)  % this.colors.length];
-            //console.log("aColor =", aColor);
+    if(this.aBeats.length > 0)
+    {
+        if (this.analysis) {
+            this.aBeats = this.aBeats.map(function(aBeat){
+                var iTime = this.frameTimestamp - aBeat[3];
+                var fDur = Math.min( iTime / this.iBeatLength, 10);
+                aBeat[4] = fDur;
+                return aBeat;
+            }.bind(this));
+        }
+        
+        for (var led = 0; led < layout.length; led++) {
+            var p = layout[led].point;
+            var aRGB = this.horizontal(p);
+            //var aRGB = this.horizontalTimeCenter(p);
             
-            // Fast accumulator for particle brightness
-            // TODO : make time based fade
-            var r = aColor[0] * (1 - (p[0]) );
-            var g = aColor[1] * (1 - (p[0]) );
-            var b = aColor[2] * (1 - (p[0]) );
-               
-            packet[dest++] = r;
-            packet[dest++] = g;
-            packet[dest++] = b;
-        } else {
-            packet[dest++] = 127;
-            packet[dest++] = 127;
-            packet[dest++] = 127;
+            packet[dest++] = aRGB[0];
+            packet[dest++] = aRGB[1];
+            packet[dest++] = aRGB[2];
         }
-    }
-
-    socket.send(packet.buffer);
-};
-
-
-Lights.prototype.colors = [];
-
-Lights.prototype.beat = function(index) {
-    // Each beat adds a new color
-    this.colors.unshift([Math.floor(Math.random()*256), Math.floor(Math.random()*256), Math.floor(Math.random()*256)]);
-    //console.log("this.colors =", this.colors);
     
-    /*
-    var totalEnergy = 0;
-
-    for (var tag in this.mood) {
-        var moodInfo = this.moodTable[tag];
-        if (moodInfo) {
-            var valence = moodInfo.valence * this.mood[tag] * 0.01;
-            var energy = moodInfo.energy * this.mood[tag] * 0.01;
-            totalEnergy += energy;
-
-            // console.log("Beat", index, this.segment, valence, energy);
-
-            this.particles.push({
-                timestamp: this.frameTimestamp,
-                segment: this.segment,
-                falloff: 20 - energy * 16,
-                color: hsv( -valence * 0.5 + 0.1, 0.8, 0.4 + energy * energy),
-                angle: index * (Math.PI + 0.2) + valence * 20.0,
-                wobble: valence * valence * energy * energy
-            });
-
-        } else {
-            console.log("Unknown mood", tag);
-        }
+        socket.send(packet.buffer);
     }
-
-    var sceneEnergy = 0.1 + totalEnergy * totalEnergy;
-
-    // Change background angle at each beat
-    this.rings.angle += (Math.random() - 0.5) * 2.0 * sceneEnergy;
-    this.rings.speed = 0.01 * sceneEnergy;
-    this.rings.wspeed = 0.02 * sceneEnergy;
-    */
 };
+
+
