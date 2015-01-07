@@ -17,6 +17,8 @@ var Lights = function (o) {
     self.retryInterval = o.retryInterval || 1000;
     self.frameInterval = o.frameInterval || 10;
 
+    self.lightPattern = o.lightPattern || "horizontal";
+    
     // Callbacks
     self.onconnecting = o.onconnecting || function() {};
     self.onconnected = o.onconnected || function() {};
@@ -151,7 +153,10 @@ Lights.prototype.followAnalysis = function() {
     }
     
     if (foundBeat != null) {
-        this.beat(foundBeat);
+        //this.beat(foundBeat);
+        //this.beatcallam(foundBeat);
+        this.beatBank(foundBeat);
+        
     }
 
     // Match a mood for the current position
@@ -174,51 +179,80 @@ Lights.prototype.followAnalysis = function() {
 
 Lights.prototype.aBeats = [];
 
-Lights.prototype.beat = function(index) {
+
+Lights.prototype.beatcallam = function(index) {
+    console.log("index =", index);
     // Each beat adds a new color
+    var r = 0;
+    var g = 255;
+    var b = 0;
+    
+    if(index % 2 === 0)
+    {
+        g = 0;
+        b = 255;
+    
+    }
+    
     this.aBeats.unshift([
-        Math.floor(Math.random()*256), 
-        Math.floor(Math.random()*256), 
-        Math.floor(Math.random()*256),
+        r, 
+        g, 
+        b,
         this.frameTimestamp,
         0
     ]);
     
     this.aBeats = this.aBeats.slice(0, 10);
-    this.iBeatLength = (60.0 / this.analysis.features.BPM)
+    console.log("this.aBeats[0] =", this.aBeats[0]);
+    this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
-Lights.prototype.horizontal = function(aPoint) {
-    var aBeat = this.aBeats[aPoint[2]  % this.aBeats.length];
-    var r = aBeat[0];
-    var g = aBeat[1];
-    var b = aBeat[2];
-     
-    return [r, g, b];
+Lights.prototype.beatBankColors = [
+[255,0,0],
+[0,255,0],
+[0,0,255],
+[245,46,245],
+[236,131,12],
+[12,236,176]
 
+
+];
+
+Lights.prototype.beatBank = function(index) {
+    // Each beat adds a new color
+    
+    var aColor = this.beatBankColors[index%this.beatBankColors.length];
+    
+    this.aBeats.unshift([
+        aColor[0], 
+        aColor[1], 
+        aColor[2], 
+        this.frameTimestamp,
+        0
+    ]);
+    
+    this.aBeats = this.aBeats.slice(0, 10);
+    this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
-Lights.prototype.horizontalTime = function(aPoint) {
-    var iRow = aPoint[2]  % this.aBeats.length;
-    var aBeat = this.aBeats[iRow];
-    var r = aBeat[0] * (10 - aBeat[4] ) / 10;
-    var g = aBeat[1] * (10 - aBeat[4] ) / 10;
-    var b = aBeat[2] * (10 - aBeat[4] ) / 10;
-     
-    return [r, g, b];
+Lights.prototype.beat = function(index) {
+    // Each beat adds a new color
+    this.aBeats.unshift([
+        Math.min(255, Math.round(Math.random()*8)*32), 
+        Math.min(255, Math.round(Math.random()*8)*32), 
+        Math.min(255, Math.round(Math.random()*8)*32), 
+        this.frameTimestamp,
+        0
+    ]);
+    
+    this.aBeats = this.aBeats.slice(0, 10);
+    this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
+// TODO : UV meter
+// TODO : down
+// TODO : 
 
-Lights.prototype.horizontalTimeCenter = function(aPoint) {
-    var aOut = [2,1,0,0,1,2];
-    var iRow = aOut[aPoint[2]]  % this.aBeats.length;
-    var aBeat = this.aBeats[iRow];
-    var r = aBeat[0] * (4 - aBeat[4] ) / 3;
-    var g = aBeat[1] * (4 - aBeat[4] ) / 3;
-    var b = aBeat[2] * (4 - aBeat[4] ) / 3;
-     
-    return [r, g, b];
-};
 
 Lights.prototype.renderLights = function() {    
     var layout = this.layout;
@@ -250,8 +284,13 @@ Lights.prototype.renderLights = function() {
         
         for (var led = 0; led < layout.length; led++) {
             var p = layout[led].point;
-            var aRGB = this.horizontal(p);
             //var aRGB = this.horizontalTimeCenter(p);
+            //var aRGB = this.frozen(p);
+            //var aRGB = this.lauren_skye(p);
+            var aRGB = this.horizontalTimeCenter(p);
+            
+            //var aRGB = this.calam(p);
+            //var aRGB = this[this.lightPattern](p);
             
             packet[dest++] = aRGB[0];
             packet[dest++] = aRGB[1];
