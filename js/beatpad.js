@@ -27,11 +27,7 @@
     {
         songURL: "music/Evanescence - Bring Me To Life (Video).mp3",
         analysisURL: "music/Evanescence - Bring Me To Life (Video).json"
-    } 
-    {
-        songURL: "music/01 - The Downfall Of Us All.mp3",
-        analysisURL: "music/01 - The Downfall Of Us All.json"
-    },
+    },*/ 
     {
         songURL: "music/19 A Little Bit Broad.mp3",
         analysisURL: "music/19 A Little Bit Broad.json"
@@ -39,11 +35,11 @@
     {
         songURL: "music/16 Origin Of Species.mp3",
         analysisURL: "music/16 Origin Of Species.json"
-    },*/
+    }/*,
     {
         songURL: "music/01 - The Paddington Frisk.mp3",
         analysisURL: "music/01 - The Paddington Frisk.json"
-    }
+    }*/
 
   ];
 
@@ -61,7 +57,24 @@
   var m = null;
   var output = null;
 
+  function switchToSong(index) {
+    // Stop the current song and place the cursor at the beginning of song number 'index' 
 
+    if (song) {
+      song.stop();
+      isPlaying = false;
+    }
+
+    song = playlist[index].song;
+    analysis = playlist[index].analysis;
+
+    if (song) {
+      lights.setAnalysis(playlist[index].analysis);
+      lights.setSong(song);
+      song.pos(0);
+    }
+  }
+  
   function convertButtonIDToSongPosition (buttonID) {
     var lastButton = numRows * numColumns - 1;
     var lastBeat = analysis.features.BEATS.length - 1;
@@ -90,7 +103,7 @@
     // button grid but not the control buttons.
 
     // Need to switch tracks?
-    if (song != playlist[currentSongIndex].song) {
+    if (song !== playlist[currentSongIndex].song) {
       switchToSong(currentSongIndex);
     }
 
@@ -126,12 +139,12 @@
 
     // if velocity != 0, this is a button press
     // if velocity == 0, button release (ignored)
-    var press = event.data[2] != 0;
+    var press = event.data[2] !== 0;
 
     // Top row
-    if (command == 0xb0) {
+    if (command === 0xb0) {
 
-      if (note == 104 && press) {
+      if (note === 104 && press) {
         // First on the top row. Play/stop
         isPaused = false;
         if (isPlaying) {
@@ -143,7 +156,7 @@
         }
       }
 
-      if (note == 105 && press) {
+      if (note === 105 && press) {
         // First on the top row. Play.
         if (isPaused) {
           song.play();
@@ -158,7 +171,7 @@
     }
 
     // Button grid
-    if (command == 0x90) {
+    if (command === 0x90) {
 
       // Row/column are packed into high/low nybbles of the MIDI note
       var row = note >> 4;
@@ -167,7 +180,7 @@
       // Is this one of the lights on the right? We use those to select tracks.
       // Set this to the 'current' track, and switch on the next seek if we need to.
       // This lets a song keep playing while we cut between tracks.
-      if (press && column == numColumns && playlist[row] && playlist[row].loaded) {
+      if (press && column === numColumns && playlist[row] && playlist[row].loaded) {
         currentSongIndex = row;
       }
 
@@ -200,15 +213,15 @@
 
   function animateControllerLEDs () {
     // Update all LEDs every frame. Simple and inefficient.
-
+    var row, green;
     // Update main grid
     if (analysis) {
 
       var currentButton = convertSongPositionToButtonID(song.pos());
 
-      var isViewingDifferentTrack = (song != playlist[currentSongIndex].song);
+      var isViewingDifferentTrack = (song !== playlist[currentSongIndex].song);
 
-      for (var row = 0; row < numRows; row++) {
+      for (row = 0; row < numRows; row++) {
         for (var column = 0; column < numColumns; column++) {
           var buttonID = column + numColumns * row;
 
@@ -232,7 +245,7 @@
 
             // Cosine curve
             var red = Math.max(0, Math.min(3, 4 * Math.cos(positionRadians) + 0.5));
-            var green = Math.max(0, Math.min(3, 4 * Math.cos(animationRadians) + 0.5));
+            green = Math.max(0, Math.min(3, 4 * Math.cos(animationRadians) + 0.5));
 
             updateGridLED(row, column, red, green);
 
@@ -246,15 +259,15 @@
     }
 
     // Update song loading indicators
-    for (var row = 0; row < numRows; row++) {
-      var green = 0;
+    for (row = 0; row < numRows; row++) {
+      green = 0;
 
       if (playlist[row] && playlist[row].loaded) {
         // Loaded songs are dim green
         green = 1;
 
         // Current song is bright
-        if (row == currentSongIndex) {
+        if (row === currentSongIndex) {
           green = 3;
         }
       }
@@ -279,7 +292,7 @@
     var inputs = m.inputs();
     var outputs = m.outputs();
 
-    if (inputs.length == 0 || outputs.length == 0) {    
+    if (inputs.length === 0 || outputs.length === 0) {    
       $('#midiStatus').text("No MIDI device found");
       return;
     }
@@ -298,7 +311,7 @@
 
   function createLaunchpad(launchPad) {
     // Create the Grid UI.
-
+    /*
     for (var i = 0, il = numRows; i < il; i++) {
 
       // Create the `row` div.
@@ -331,15 +344,15 @@
       // Attach entire row to launchPad.
       launchPad.appendChild(rowElem);
     }
-
+    */
     // UI Callbacks
 
     document.getElementById('play').onclick = function () {
       song.play();
-    }
+    };
     document.getElementById('pause').onclick = function () {
       song.pause();
-    }
+    };
   }
 
   function beginLoadingSong(index) {
@@ -358,12 +371,13 @@
       loop: false,
 
       onplay: function() {
-        if (index == currentSongIndex) {
+        if (index === currentSongIndex) {
           isPlaying = true;
+          $('#musicStatus').text(this.urls[0]);
         }
       },
       onend: function() {
-        if (index == currentSongIndex) {
+        if (index === currentSongIndex) {
           isPlaying = false;
         }
       },
@@ -379,7 +393,7 @@
         }
 
         // If we loaded the first song, start running it
-        if (index == 0) {
+        if (index === 0) {
           switchToSong(index);
         }
       }
@@ -388,40 +402,41 @@
     $('#musicStatus').text("Loading track " + (index + 1) + " of " + playlist.length + " ...");
   }
 
-  function switchToSong(index) {
-    // Stop the current song and place the cursor at the beginning of song number 'index' 
-
-    if (song) {
-      song.stop();
-      isPlaying = false;
-    }
-
-    song = playlist[index].song;
-    analysis = playlist[index].analysis;
-
-    if (song) {
-      lights.setAnalysis(playlist[index].analysis);
-      lights.setSong(song);
-      song.pos(0);
-    }
-  }
+  
 
   // Keyboard grid, 8x5 subset
   var keygrid = "12345678QWERTYUIASDFGHJKLZXCVBNM,.";
   var keyhandlers = {};
   for (var i = 0; i < keygrid.length; i++) {
     (function (i) {
-      keyhandlers[keygrid.charCodeAt(i)] = function (evt) { seekToBeat(i); }
+      keyhandlers[keygrid.charCodeAt(i)] = function (evt) {
+        seekToBeat(i);
+      };
     })(i);
   }
 
   // Prev/next song, []
   keyhandlers[219] = function (evt) {
-    currentSongIndex = Math.max(currentSongIndex - 1, 0);
-  }
+      
+    var newSongIndex = Math.max(currentSongIndex - 1, 0);
+    switchToSong(newSongIndex);
+    if (!isPlaying) {
+      song.play();
+      isPlaying = true;
+      isPaused = false;
+    }
+    //console.log("currentSongIndex =", currentSongIndex);
+  };
   keyhandlers[221] = function (evt) {
-    currentSongIndex = Math.min(currentSongIndex + 1, playlist.length - 1);
-  }
+    var newSongIndex = Math.min(currentSongIndex + 1, playlist.length - 1);
+    switchToSong(newSongIndex);
+    if (!isPlaying) {
+      song.play();
+      isPlaying = true;
+      isPaused = false;
+    }
+    //console.log("currentSongIndex =", currentSongIndex);
+  };
 
   // Add event listener after all the content has loaded.
   window.addEventListener('load', function() {
@@ -441,7 +456,9 @@
       },
       onerror: function() {
           $('#ledStatus').text("Error connecting to LED server");
-      }
+      },
+      lightPattern: $("#pattern").val(),
+      beatGenerator:$("#beatgen").val()
     });
 
     // Keyboard UI
@@ -455,18 +472,23 @@
     // when invoked, `.requestMIDIAccess` returns a
     // Promise object representing a request for access
     // to MIDI devices on the user's system.
-    window.navigator
-      .requestMIDIAccess()
+    /*window.navigator.requestMIDIAccess()
       .then(onMIDISuccess, onMIDIFailure);
     $('#midiStatus').text("Requesting MIDI access...");
-
+    */
+    
     // Create the launchpad (grid) UI
     createLaunchpad(document.getElementById("launchpad"));
-    document.getElementById("pattern").onclick(function(evt){
-            console.log("evt =", evt);
-            
-    });
     
-	});
+    document.getElementById("pattern").onchange = function(evt){
+        lights.lightPattern = evt.target.value;
+    };
+    
+    document.getElementById("beatgen").onchange = function(evt){
+        lights.beatGenerator = evt.target.value;
+    };
+    
+    
+  });
 
 })();

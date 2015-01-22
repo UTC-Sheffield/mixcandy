@@ -1,3 +1,18 @@
+  var b_canvas = document.getElementById("sim");
+  //console.log("b_canvas =", b_canvas);
+  var b_context = b_canvas.getContext("2d");
+  //console.log("b_context =", b_context);
+  
+
+function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
+function toHex(n) {
+ n = parseInt(n,10);
+ if (isNaN(n)) return "00";
+ n = Math.max(0,Math.min(n,255));
+ return "0123456789ABCDEF".charAt((n-n%16)/16)
+      + "0123456789ABCDEF".charAt(n%16);
+}
+
 var Lights = function (o) {
     var self = this;
     o = o || {};
@@ -18,6 +33,8 @@ var Lights = function (o) {
     self.frameInterval = o.frameInterval || 10;
 
     self.lightPattern = o.lightPattern || "horizontal";
+    self.beatGenerator = o.beatGenerator || "defaultbeat";
+    
     
     // Callbacks
     self.onconnecting = o.onconnecting || function() {};
@@ -93,6 +110,7 @@ Lights.prototype.connect = function() {
     self.ws.onerror = function(event) {
         self.status = "error";
         self.onerror(event);
+        self._animationLoop();
     };
 
     self.ws.onclose = function(event) {
@@ -153,10 +171,7 @@ Lights.prototype.followAnalysis = function() {
     }
     
     if (foundBeat != null) {
-        //this.beat(foundBeat);
-        //this.beatcallam(foundBeat);
-        this.beatBank(foundBeat);
-        
+        this[this.beatGenerator](foundBeat);
     }
 
     // Match a mood for the current position
@@ -181,7 +196,6 @@ Lights.prototype.aBeats = [];
 
 
 Lights.prototype.beatcallam = function(index) {
-    console.log("index =", index);
     // Each beat adds a new color
     var r = 0;
     var g = 255;
@@ -203,19 +217,16 @@ Lights.prototype.beatcallam = function(index) {
     ]);
     
     this.aBeats = this.aBeats.slice(0, 10);
-    console.log("this.aBeats[0] =", this.aBeats[0]);
     this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
 Lights.prototype.beatBankColors = [
-[255,0,0],
-[0,255,0],
-[0,0,255],
-[245,46,245],
-[236,131,12],
-[12,236,176]
-
-
+    [255,0,0],
+    [0,255,0],
+    [0,0,255],
+    [245,46,245],
+    [236,131,12],
+    [12,236,176]
 ];
 
 Lights.prototype.beatBank = function(index) {
@@ -235,7 +246,8 @@ Lights.prototype.beatBank = function(index) {
     this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
-Lights.prototype.beat = function(index) {
+
+Lights.prototype.defaultbeat = function(index) {
     // Each beat adds a new color
     this.aBeats.unshift([
         Math.min(255, Math.round(Math.random()*8)*32), 
@@ -249,6 +261,8 @@ Lights.prototype.beat = function(index) {
     this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
+Lights.prototype.beat = Lights.prototype.defaultbeat;
+
 // TODO : UV meter
 // TODO : down
 // TODO : 
@@ -258,17 +272,19 @@ Lights.prototype.renderLights = function() {
     var layout = this.layout;
     var socket = this.ws;
     //var particles = this.particles;
-    var packet = new Uint8ClampedArray(4 + this.layout.length * 3);
-
-    if (socket.readyState != 1 /* OPEN */) {
-        // The server connection isn't open. Nothing to do.
-        return;
+    if(self.status === "connected") {
+        var packet = new Uint8ClampedArray(4 + this.layout.length * 3);
+    
+        if (socket.readyState != 1 /* OPEN */) {
+            // The server connection isn't open. Nothing to do.
+            return;
+        }
+    
+        if (socket.bufferedAmount > packet.length) {
+            return;
+        }
     }
-
-    if (socket.bufferedAmount > packet.length) {
-        return;
-    }
-
+    
     // Dest position in our packet. Start right after the header.
     var dest = 4;
     if(this.aBeats.length > 0)
@@ -287,17 +303,29 @@ Lights.prototype.renderLights = function() {
             //var aRGB = this.horizontalTimeCenter(p);
             //var aRGB = this.frozen(p);
             //var aRGB = this.lauren_skye(p);
-            var aRGB = this.horizontalTimeCenter(p);
+            //var aRGB = this.horizontalTimeCenter(p);
+            //console.log("p =", p, "aRGB =", aRGB);
             
             //var aRGB = this.calam(p);
-            //var aRGB = this[this.lightPattern](p);
+            var aRGB = this[this.lightPattern](p);
             
-            packet[dest++] = aRGB[0];
-            packet[dest++] = aRGB[1];
-            packet[dest++] = aRGB[2];
+            
+            if (self.status === "connected") {
+                packet[dest++] = aRGB[0];
+                packet[dest++] = aRGB[1];
+                packet[dest++] = aRGB[2];
+            } else {
+                
+                b_context.fillStyle = ("rgb("+aRGB[0]+","+aRGB[1]+","+aRGB[2]+")");
+                b_context.fillRect(p[2] * 24, p[0] * 12, 20, 10);
+                
+            }
+            
         }
-    
-        socket.send(packet.buffer);
+        
+        if(self.status === "connected") {
+            socket.send(packet.buffer);
+        }
     }
 };
 
