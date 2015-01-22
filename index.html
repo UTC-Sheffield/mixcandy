@@ -23,7 +23,7 @@
         <option>beatcallam</option>
         <option>beatBank</option>
     </select>
-    
+    <button id="usecode">Use Code</button>
     
   </div>
   <div id="launchpad"></div>
@@ -31,7 +31,28 @@
   <div id="musicStatus"></div>
   <div id="midiStatus"></div>
   
-  <canvas id="sim" width="240" height="300"></canvas>
+  <div id="editor"></div>
+    <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/dawn");
+        editor.getSession().setMode("ace/mode/javascript");
+        editor.getSession().setUseWrapMode(false);
+        editor.setShowPrintMargin(false);
+        editor.setFontSize(16);
+    </script>
+    
+    <style>
+    #editor {
+        position: absolute;
+        right:300px;
+        width: 700px;
+        height: 300px;
+    }
+    </style>
+  
+  <canvas id="sim" width="240" height="400"></canvas>
   
   
   <script src="js/lib/howler.js"></script>

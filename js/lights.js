@@ -36,6 +36,9 @@ var Lights = function (o) {
     self.beatGenerator = o.beatGenerator || "defaultbeat";
     
     
+    sourceExtra( self[self.lightPattern].toSource());
+    editing = "pattern";
+    
     // Callbacks
     self.onconnecting = o.onconnecting || function() {};
     self.onconnected = o.onconnected || function() {};
@@ -194,30 +197,21 @@ Lights.prototype.followAnalysis = function() {
 
 Lights.prototype.aBeats = [];
 
-
 Lights.prototype.beatcallam = function(index) {
-    // Each beat adds a new color
-    var r = 0;
-    var g = 255;
-    var b = 0;
-    
-    if(index % 2 === 0)
-    {
-        g = 0;
-        b = 255;
-    
-    }
-    
-    this.aBeats.unshift([
-        r, 
-        g, 
-        b,
-        this.frameTimestamp,
-        0
-    ]);
-    
-    this.aBeats = this.aBeats.slice(0, 10);
-    this.iBeatLength = (60.0 / this.analysis.features.BPM);
+var r = 0;
+var g = 255;
+var b = 0;
+
+if(index % 2 === 0)
+{
+    g = 0;
+    b = 255;
+}
+
+this.aBeats.unshift([r, g, b, this.frameTimestamp, 0]);
+
+this.aBeats = this.aBeats.slice(0, 10);
+this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
 Lights.prototype.beatBankColors = [
@@ -230,35 +224,32 @@ Lights.prototype.beatBankColors = [
 ];
 
 Lights.prototype.beatBank = function(index) {
-    // Each beat adds a new color
-    
-    var aColor = this.beatBankColors[index%this.beatBankColors.length];
-    
-    this.aBeats.unshift([
-        aColor[0], 
-        aColor[1], 
-        aColor[2], 
-        this.frameTimestamp,
-        0
-    ]);
-    
-    this.aBeats = this.aBeats.slice(0, 10);
-    this.iBeatLength = (60.0 / this.analysis.features.BPM);
+var aColor = this.beatBankColors[index%this.beatBankColors.length];
+
+this.aBeats.unshift([
+    aColor[0], 
+    aColor[1], 
+    aColor[2], 
+    this.frameTimestamp,
+    0
+]);
+
+this.aBeats = this.aBeats.slice(0, 10);
+this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
 
 Lights.prototype.defaultbeat = function(index) {
-    // Each beat adds a new color
-    this.aBeats.unshift([
-        Math.min(255, Math.round(Math.random()*8)*32), 
-        Math.min(255, Math.round(Math.random()*8)*32), 
-        Math.min(255, Math.round(Math.random()*8)*32), 
-        this.frameTimestamp,
-        0
-    ]);
-    
-    this.aBeats = this.aBeats.slice(0, 10);
-    this.iBeatLength = (60.0 / this.analysis.features.BPM);
+this.aBeats.unshift([
+    Math.min(255, Math.round(Math.random()*8)*32), 
+    Math.min(255, Math.round(Math.random()*8)*32), 
+    Math.min(255, Math.round(Math.random()*8)*32), 
+    this.frameTimestamp,
+    0
+]);
+
+this.aBeats = this.aBeats.slice(0, 10);
+this.iBeatLength = (60.0 / this.analysis.features.BPM);
 };
 
 Lights.prototype.beat = Lights.prototype.defaultbeat;
@@ -308,7 +299,6 @@ Lights.prototype.renderLights = function() {
             
             //var aRGB = this.calam(p);
             var aRGB = this[this.lightPattern](p);
-            
             
             if (self.status === "connected") {
                 packet[dest++] = aRGB[0];

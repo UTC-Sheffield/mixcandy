@@ -5,6 +5,15 @@
  * http://d19ulaff0trnck.cloudfront.net/sites/default/files/novation/downloads/4080/launchpad-programmers-reference.pdf
  */
 
+ 
+    function sourceExtra(sCode) {
+        var aStr = sCode.split("\n");
+        aStr.pop();
+        aStr.shift();
+        editor.setValue(aStr.join("\n"));
+    }
+    
+    
 (function () {
 
   // LaunchPad S Configuration (8x8 Grid)
@@ -310,42 +319,6 @@
   }
 
   function createLaunchpad(launchPad) {
-    // Create the Grid UI.
-    /*
-    for (var i = 0, il = numRows; i < il; i++) {
-
-      // Create the `row` div.
-      var rowElem = document.createElement("div");
-      rowElem.className = "row";
-      rowElem.row = i;
-
-      // Run another for-loop for the row's squares.
-      for (var j = 0, jl = numColumns; j < jl; j++) {
-
-        // Create the `cell` element with unique `id` and class cell.
-        var cellElem = document.createElement("div");
-        cellElem.row = i;
-        cellElem.col = j;
-
-        // Current row plus current column ensures uniqueness.
-        cellElem.id = (i * numRows) + j;
-        cellElem.className = "cell";
-        rowElem.appendChild(cellElem);
-
-        // Add event listener to each cell element.
-        cellElem.onclick = function () {
-
-          // Retrieve the integer from the cellElement's `id`
-          beat = parseInt(this.id);
-          seekToBeat(beat);
-        };
-      }
-
-      // Attach entire row to launchPad.
-      launchPad.appendChild(rowElem);
-    }
-    */
-    // UI Callbacks
 
     document.getElementById('play').onclick = function () {
       song.play();
@@ -402,7 +375,7 @@
     $('#musicStatus').text("Loading track " + (index + 1) + " of " + playlist.length + " ...");
   }
 
-  
+  /*
 
   // Keyboard grid, 8x5 subset
   var keygrid = "12345678QWERTYUIASDFGHJKLZXCVBNM,.";
@@ -437,7 +410,7 @@
     }
     //console.log("currentSongIndex =", currentSongIndex);
   };
-
+*/
   // Add event listener after all the content has loaded.
   window.addEventListener('load', function() {
 
@@ -461,6 +434,7 @@
       beatGenerator:$("#beatgen").val()
     });
 
+    /*
     // Keyboard UI
     $('body').keydown( function(evt) {
       var fn = keyhandlers[evt.keyCode];
@@ -468,7 +442,7 @@
         fn(evt);
       }
     });
-
+*/
     // when invoked, `.requestMIDIAccess` returns a
     // Promise object representing a request for access
     // to MIDI devices on the user's system.
@@ -480,13 +454,32 @@
     // Create the launchpad (grid) UI
     createLaunchpad(document.getElementById("launchpad"));
     
+    var editing = "pattern";
+    
     document.getElementById("pattern").onchange = function(evt){
         lights.lightPattern = evt.target.value;
+        sourceExtra(lights[lights.lightPattern].toSource());
+        editing = "pattern";
     };
+    
     
     document.getElementById("beatgen").onchange = function(evt){
         lights.beatGenerator = evt.target.value;
+        sourceExtra(lights[lights.beatGenerator].toSource())
+        editing = "beatgen";
     };
+
+    document.getElementById("usecode").onclick = function(evt){
+        var script = editor.getValue();
+        if (editing === "pattern") {
+            lights.newpattern = new Function("aPoint", script);
+            lights.lightPattern = "newpattern";
+        } else {
+            lights.newbeatgen = new Function("index", script);
+            lights.beatGenerator = "newbeatgen";
+        }
+    };
+        
     
     
   });
