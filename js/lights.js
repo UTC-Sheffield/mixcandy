@@ -32,8 +32,8 @@ var Lights = function (o) {
     self.retryInterval = o.retryInterval || 1000;
     self.frameInterval = o.frameInterval || 10;
 
-    self.lightPattern = o.lightPattern || "horizontal";
-    self.beatGenerator = o.beatGenerator || "defaultbeat";
+    self.lightPattern = o.lightPattern || "rgb_horizontal";
+    self.beatGenerator = o.beatGenerator || "beatgen_256";
     
     
     sourceExtra( self[self.lightPattern].toSource());
@@ -50,6 +50,31 @@ var Lights = function (o) {
         self.layout = data;
         self.connect();
     });
+};
+
+Lights.prototype.getBeatGen = function() {
+    var aFuncs = [];
+    var rMatcher = /beatgen_/;
+    for (var funcname in this) {
+        //console.log("funcname =", funcname);
+        if(rMatcher.test(funcname)) {
+            aFuncs.push(funcname.replace(rMatcher, ""));
+        }
+    }
+    return aFuncs;
+};
+
+
+Lights.prototype.getRgbGen = function() {
+    var aFuncs = [];
+    var rMatcher = /rgb_/;
+    for (var funcname in this) {
+        //console.log("funcname =", funcname);
+        if(rMatcher.test(funcname)) {
+            aFuncs.push(funcname.replace(rMatcher, ""));
+        }
+    }
+    return aFuncs;
 };
 
 Lights.prototype.moodTable = {
@@ -197,67 +222,6 @@ Lights.prototype.followAnalysis = function() {
 
 Lights.prototype.aBeats = [];
 
-Lights.prototype.beatcallam = function(index) {
-var r = 0;
-var g = 255;
-var b = 0;
-
-if(index % 2 === 0)
-{
-    g = 0;
-    b = 255;
-}
-
-this.aBeats.unshift([r, g, b, this.frameTimestamp, 0]);
-
-this.aBeats = this.aBeats.slice(0, 10);
-this.iBeatLength = (60.0 / this.analysis.features.BPM);
-};
-
-Lights.prototype.beatBankColors = [
-    [255,0,0],
-    [0,255,0],
-    [0,0,255],
-    [245,46,245],
-    [236,131,12],
-    [12,236,176]
-];
-
-Lights.prototype.beatBank = function(index) {
-var aColor = this.beatBankColors[index%this.beatBankColors.length];
-
-this.aBeats.unshift([
-    aColor[0], 
-    aColor[1], 
-    aColor[2], 
-    this.frameTimestamp,
-    0
-]);
-
-this.aBeats = this.aBeats.slice(0, 10);
-this.iBeatLength = (60.0 / this.analysis.features.BPM);
-};
-
-
-Lights.prototype.defaultbeat = function(index) {
-this.aBeats.unshift([
-    Math.min(255, Math.round(Math.random()*8)*32), 
-    Math.min(255, Math.round(Math.random()*8)*32), 
-    Math.min(255, Math.round(Math.random()*8)*32), 
-    this.frameTimestamp,
-    0
-]);
-
-this.aBeats = this.aBeats.slice(0, 10);
-this.iBeatLength = (60.0 / this.analysis.features.BPM);
-};
-
-Lights.prototype.beat = Lights.prototype.defaultbeat;
-
-// TODO : UV meter
-// TODO : down
-// TODO : 
-
 
 Lights.prototype.renderLights = function() {    
     var layout = this.layout;
@@ -291,13 +255,6 @@ Lights.prototype.renderLights = function() {
         
         for (var led = 0; led < layout.length; led++) {
             var p = layout[led].point;
-            //var aRGB = this.horizontalTimeCenter(p);
-            //var aRGB = this.frozen(p);
-            //var aRGB = this.lauren_skye(p);
-            //var aRGB = this.horizontalTimeCenter(p);
-            //console.log("p =", p, "aRGB =", aRGB);
-            
-            //var aRGB = this.calam(p);
             var aRGB = this[this.lightPattern](p);
             
             if (self.status === "connected") {

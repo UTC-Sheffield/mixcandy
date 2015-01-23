@@ -456,15 +456,23 @@
     
     var editing = "pattern";
     
+    lights.getRgbGen().forEach(function(funcname) {
+        $('#pattern').append(new Option(funcname, funcname));
+    });
+    lights.getBeatGen().forEach(function(funcname) {
+        $('#beatgen').append(new Option(funcname, funcname));
+    });
+    
+    
     document.getElementById("pattern").onchange = function(evt){
-        lights.lightPattern = evt.target.value;
+        lights.lightPattern = "rgb_"+evt.target.value;
         sourceExtra(lights[lights.lightPattern].toSource());
         editing = "pattern";
     };
     
     
     document.getElementById("beatgen").onchange = function(evt){
-        lights.beatGenerator = evt.target.value;
+        lights.beatGenerator = "beatgen_"+evt.target.value;
         sourceExtra(lights[lights.beatGenerator].toSource())
         editing = "beatgen";
     };
