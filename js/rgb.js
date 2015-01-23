@@ -11,6 +11,16 @@ var b = aBeat[2];
 return [r, g, b];
 };
 
+Lights.prototype.rgb_vertical = function(aPoint) {
+var aBeat = this.aBeats[aPoint[0] % this.aBeats.length];
+
+var r = aBeat[0];
+var g = aBeat[1];
+var b = aBeat[2];
+
+return [r, g, b];
+};
+
 Lights.prototype.rgb_lauren_skye = function(aPoint) {
 var aOut = [2,1,0,0,1,2];
 var iRow = aOut[aPoint[2]]  % this.aBeats.length;
