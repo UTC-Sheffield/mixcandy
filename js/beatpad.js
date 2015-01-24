@@ -27,31 +27,14 @@
   var buttonAnimationStates = {};
 
   // Ugly hardcoded list of temporary URLs for songs we're demoing with!
-  var playlist = [
-    /*{
-        songURL: "music/38 Baby Its Cold Outside.mp3",
-        analysisURL: "music/38 Baby Its Cold Outside.json"
-    }   
-      
-    {
-        songURL: "music/Evanescence - Bring Me To Life (Video).mp3",
-        analysisURL: "music/Evanescence - Bring Me To Life (Video).json"
-    },*/ 
-    {
-        songURL: "music/19 A Little Bit Broad.mp3",
-        analysisURL: "music/19 A Little Bit Broad.json"
-    },
-    {
-        songURL: "music/16 Origin Of Species.mp3",
-        analysisURL: "music/16 Origin Of Species.json"
-    }/*,
-    {
-        songURL: "music/01 - The Paddington Frisk.mp3",
-        analysisURL: "music/01 - The Paddington Frisk.json"
-    }*/
+  var playlist = [];
+  console.log("playlist 1=", playlist);
 
-  ];
-
+  $.getJSON("songs.json", {}, function(pdata){
+        playlist = pdata;    
+        console.log("playlist =", playlist);
+  }.bind(this));
+  
   // Playlist state
   var currentSongIndex = 0;
 
