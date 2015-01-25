@@ -5,7 +5,6 @@
  * http://d19ulaff0trnck.cloudfront.net/sites/default/files/novation/downloads/4080/launchpad-programmers-reference.pdf
  */
 
- 
     function sourceExtra(sCode) {
         var aStr = sCode.split("\n");
         aStr.pop();
@@ -28,11 +27,9 @@
 
   // Ugly hardcoded list of temporary URLs for songs we're demoing with!
   var playlist = [];
-  console.log("playlist 1=", playlist);
 
   $.getJSON("songs.json", {}, function(pdata){
         playlist = pdata;    
-        console.log("playlist =", playlist);
   }.bind(this));
   
   // Playlist state
@@ -312,10 +309,13 @@
   }
 
   function beginLoadingSong(index) {
+      console.log("index =", index);
     // Start asynchronously loading the playlist item at 'index'.
     // We should only be doing one of these at a time.
 
     var item = playlist[index];
+    //console.log("playlist =", playlist);
+    //console.log("item =", item);
 
     $.getJSON(item.analysisURL, function (data) {
       item.analysis = data;
@@ -358,21 +358,7 @@
     $('#musicStatus').text("Loading track " + (index + 1) + " of " + playlist.length + " ...");
   }
 
-  /*
-
-  // Keyboard grid, 8x5 subset
-  var keygrid = "12345678QWERTYUIASDFGHJKLZXCVBNM,.";
-  var keyhandlers = {};
-  for (var i = 0; i < keygrid.length; i++) {
-    (function (i) {
-      keyhandlers[keygrid.charCodeAt(i)] = function (evt) {
-        seekToBeat(i);
-      };
-    })(i);
-  }
-
-  // Prev/next song, []
-  keyhandlers[219] = function (evt) {
+  $("#prev").click(function (evt) {
       
     var newSongIndex = Math.max(currentSongIndex - 1, 0);
     switchToSong(newSongIndex);
@@ -382,8 +368,9 @@
       isPaused = false;
     }
     //console.log("currentSongIndex =", currentSongIndex);
-  };
-  keyhandlers[221] = function (evt) {
+  });
+  
+  $("#next").click(function (evt) {
     var newSongIndex = Math.min(currentSongIndex + 1, playlist.length - 1);
     switchToSong(newSongIndex);
     if (!isPlaying) {
@@ -392,8 +379,8 @@
       isPaused = false;
     }
     //console.log("currentSongIndex =", currentSongIndex);
-  };
-*/
+  });
+  
   // Add event listener after all the content has loaded.
   window.addEventListener('load', function() {
 
@@ -451,6 +438,8 @@
         lights.lightPattern = "rgb_"+evt.target.value;
         sourceExtra(lights[lights.lightPattern].toSource());
         editing = "pattern";
+        $(".beatgen").hide();
+        $(".pattern").show();
     };
     
     
@@ -458,6 +447,8 @@
         lights.beatGenerator = "beatgen_"+evt.target.value;
         sourceExtra(lights[lights.beatGenerator].toSource())
         editing = "beatgen";
+        $(".beatgen").show();
+        $(".pattern").hide();
     };
 
     document.getElementById("usecode").onclick = function(evt){
