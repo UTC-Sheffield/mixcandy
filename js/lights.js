@@ -38,6 +38,8 @@ var Lights = function (o) {
     
     sourceExtra( self[self.lightPattern].toSource());
     editing = "pattern";
+    $(".beatgen").hide();
+    $(".pattern").show();
     
     // Callbacks
     self.onconnecting = o.onconnecting || function() {};
