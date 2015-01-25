@@ -38,6 +38,8 @@ var Lights = function (o) {
     
     sourceExtra( self[self.lightPattern].toSource());
     editing = "pattern";
+    $(".beatgen").hide();
+        $(".pattern").show();
     
     // Callbacks
     self.onconnecting = o.onconnecting || function() {};
@@ -264,7 +266,8 @@ Lights.prototype.renderLights = function() {
             } else {
                 
                 b_context.fillStyle = ("rgb("+aRGB[0]+","+aRGB[1]+","+aRGB[2]+")");
-                b_context.fillRect(p[2] * 24, p[0] * 12, 20, 10);
+                b_context.fillRect(p[0] * 24, p[1] * 12, 20, 10);
+                console.log("p =", p);
                 
             }
             
