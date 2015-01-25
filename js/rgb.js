@@ -72,6 +72,20 @@ var b = 255;
 return [r, g, b];
 };
 
+Lights.prototype.rgb_centre_noise = function(aPoint) {
+
+var aOut = [2,1,0,0,1,2];
+var iRow = aOut[aPoint[2]]  % this.aBeats.length;
+var aBeat = this.aBeats[iRow];
+var iWobble = Math.round(Math.random() * 64)-32;
+
+var r = Math.max(0, Math.min(255, aBeat[0] + iWobble));
+var g = Math.max(0, Math.min(255, aBeat[1] + iWobble));
+var b = Math.max(0, Math.min(255, aBeat[2] + iWobble));
+
+return [r, g, b];
+};
+
 Lights.prototype.rgb_blocksdown = function(aPoint) {
 var iRow = Math.floor(aPoint[0]/3) % this.aBeats.length;
 var aBeat = this.aBeats[iRow];
