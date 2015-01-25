@@ -22,5 +22,5 @@ var hsv = function (h, s, v) {
         g = [t, v, v, q, p, p][i],
         b = [p, p, t, v, v, q][i];
 
-    return [ r * 255, g * 255, b * 255 ];
+    return [ Math.round(r * 255), Math.round(g * 255), Math.round(b * 255) ];
 }
