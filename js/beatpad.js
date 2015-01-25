@@ -445,7 +445,7 @@
     
     document.getElementById("beatgen").onchange = function(evt){
         lights.beatGenerator = "beatgen_"+evt.target.value;
-        sourceExtra(lights[lights.beatGenerator].toSource())
+        sourceExtra(lights[lights.beatGenerator].toSource());
         editing = "beatgen";
         $(".beatgen").show();
         $(".pattern").hide();
