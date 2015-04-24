@@ -1,0 +1,21 @@
+
+body { background: black; color: white;}
+.loading { border-color: red;}
+
+#livecode {
+    position: absolute;
+    right:300px;
+    width: 700px;
+    height: 300px;
+}
+
+#editor {
+    position: relative;
+    width: 700px;
+    height: 300px;
+}
+
+#sim {
+   width: 240px;
+   height: 400px;
+}
