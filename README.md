@@ -1,20 +1,17 @@
 Mixcandy
 ========
 
-Project for Tech Group Enrichment.
+Project by Univesity Techincal College Sheffield - Tech Group Enrichment.
 
-The guys at scanlime built a live performance tool that combines music analysis, MIDI controller input, and real-time LED light visuals.
+Mixcandy listens to music and flashes lights (Neopixels connected through Raspberry Pi via a Fadecandy). 
 
-We want something similar but our students will be coding the actual effects.
+It now runs on a Raspberry Pi and provides a web interface that allows the user to select different colour and pattern generation algorithms and even change the code being executed live. We now have a live preview and a live coding interface to change the lights patterns live. 
 
-Songs are analyzed for beat, mood, and segmentation using Gracenote's timeline API. 
-to do this run "python build.py" and it will scan your music folder
+The project uses the Fadecandy server for raspberry pi https://github.com/scanlime/fadecandy , http://ace.c9.io/ and HTML5 getUserMedia() to listen to audio through a web browsers access to a microphone. LED visualization frames are computed in JavaScript and sent to the Fadecandy daemon over WebSockets. 
 
-We now have a live preview and a live coding interface to change the lights patterns live.
-
-The project runs entirely in the browser, using the Web MIDI API, Howler.js, and Fadecandy. Audio output is handled by rapidly seeking pre-cached tracks, and LED visualization frames are computed in JavaScript and sent to the Fadecandy daemon over WebSockets. Low latency and high frame rate make Mixcandy deliciously smooth, and so much fun that we have a hard time walking away from it.
+See it in action here https://www.youtube.com/watch?v=fxQHm8L_ReE
 
 Credits
 =======
 
-Making me Nervous - by Brad Sucks - http://www.bradsucks.net/music/making-me-nervous/
+Code is now only very loosley based on stuff written by the guys at scanlime, who built a live performance tool that combines music analysis, MIDI controller input, and real-time LED light visuals.
