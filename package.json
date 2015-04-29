@@ -9,6 +9,7 @@
   "author": "francismakes scanlime",
   "license": "MIT",
   "dependencies": {
-    "jade": "~1.3.1"
+    "jade": "~1.3.1",
+    "curlconverter": "0.0.13"
   }
 }

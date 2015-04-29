@@ -2,21 +2,25 @@
 // TODO : down
 
 Lights.prototype.rgb_horizontal = function(aPoint) {
-var aBeat = this.aBeats[aPoint[0] % this.aBeats.length];
+//pick the beat for light column (X aPoint[0])
+//(the % means it can't pick a beat before its made)
+var aBeat = this.aBeats[aPoint[0] % this.aBeats.length]; 
 
-var r = aBeat[0];
-var g = aBeat[1];
-var b = aBeat[2];
+var r = aBeat[0]; //Red
+var g = aBeat[1]; //Green
+var b = aBeat[2]; //Blue
 
 return [r, g, b];
 };
 
 Lights.prototype.rgb_vertical = function(aPoint) {
+//pick the beat for light row (Y aPoint[1]) 
+//(the % means it can't pick a beat before its made)
 var aBeat = this.aBeats[aPoint[1] % this.aBeats.length];
 
-var r = aBeat[0];
-var g = aBeat[1];
-var b = aBeat[2];
+var r = aBeat[0]; //Red
+var g = aBeat[1]; //Green
+var b = aBeat[2]; //Blue
 
 return [r, g, b];
 };
@@ -105,6 +109,22 @@ var aBeat = this.aBeats[iColumn];
 var r = Math.round(aBeat[0] * (1-(aPoint[1]/30)));
 var g = Math.round(aBeat[1] * (1-(aPoint[1]/30)));
 var b = Math.round(aBeat[2] * (1-(aPoint[1]/30)));
+
+return [r, g, b];
+};
+
+
+//pick the beat for light column (X aPoint[0])
+//(the % means it can't pick a beat before its made)
+Lights.prototype.rgb_circle = function(aPoint) {
+var dist = Math.round(Math.sqrt(Math.pow(aPoint[0] - 2.5, 2) +
+Math.pow(aPoint[1] - (this.aBeats[0][5]*2)+0.5, 2)));
+
+var aBeat = this.aBeats[dist % this.aBeats.length]; 
+
+var r = aBeat[0]; //Red
+var g = aBeat[1]; //Green
+var b = aBeat[2]; //Blue
 
 return [r, g, b];
 };

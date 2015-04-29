@@ -15,6 +15,7 @@ function toHex(n) {
 
 var Lights = function (o) {
     var self = this;
+    
     o = o || {};
 
     // Required parameters
@@ -35,6 +36,7 @@ var Lights = function (o) {
     self.lightPattern = o.lightPattern || "rgb_horizontal";
     self.beatGenerator = o.beatGenerator || "beatgen_256";
     
+    self.useSimulator = o.useSimulator || true;
     
     sourceExtra( self[self.lightPattern].toSource());
     editing = "pattern";
@@ -140,7 +142,6 @@ Lights.prototype.connect = function() {
     self.ws.onerror = function(event) {
         self.status = "error";
         self.onerror(event);
-        self._animationLoop();
     };
 
     self.ws.onclose = function(event) {
@@ -162,6 +163,12 @@ Lights.prototype.connect = function() {
     };
 
     self.status = "connecting";
+    
+        console.log("self.useSimulator =", self.useSimulator);
+    if(self.useSimulator)
+    {
+        self._animationLoop();
+    }
     self.onconnecting();
 };
 
@@ -229,7 +236,7 @@ Lights.prototype.renderLights = function() {
     var layout = this.layout;
     var socket = this.ws;
     //var particles = this.particles;
-    if(self.status === "connected") {
+    if(this.status === "connected") {
         var packet = new Uint8ClampedArray(4 + this.layout.length * 3);
     
         if (socket.readyState != 1 /* OPEN */) {
@@ -259,21 +266,20 @@ Lights.prototype.renderLights = function() {
             var p = layout[led].point;
             var aRGB = this[this.lightPattern](p);
             
-            if (self.status === "connected") {
+            if (this.status === "connected") {
                 packet[dest++] = aRGB[0];
                 packet[dest++] = aRGB[1];
                 packet[dest++] = aRGB[2];
-            } else {
-                
+            } 
+            
+            if (this.useSimulator) {
                 b_context.fillStyle = ("rgb("+aRGB[0]+","+aRGB[1]+","+aRGB[2]+")");
                 b_context.fillRect(p[0] * 24, p[1] * 12, 20, 10);
-                console.log("p =", p);
-                
             }
             
         }
         
-        if(self.status === "connected") {
+        if(this.status === "connected") {
             socket.send(packet.buffer);
         }
     }

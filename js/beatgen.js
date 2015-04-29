@@ -4,7 +4,8 @@ this.aBeats.unshift([//Adds at start of this.aBeats
     Math.min(255, Math.round(Math.random()*8)*32), //Green
     Math.min(255, Math.round(Math.random()*8)*32), //Blue
     this.frameTimestamp,//When did this beat start
-    0 //How long since this beat started
+    0, //How long since this beat started
+    0
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
@@ -17,7 +18,8 @@ this.aBeats.unshift([ //Adds at start of this.aBeats
     Math.min(255, Math.round(Math.random()*4)*64), //Green 
     Math.min(255, Math.round(Math.random()*4)*64), //Blue
     this.frameTimestamp, //When did this beat start
-    0 //How long since this beat started
+    0, //How long since this beat started
+    0
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
@@ -43,7 +45,6 @@ Lights.prototype.beatBankColors = [
     [0,255,0],
     [0,0,255],
     [245,46,245],
-    [236,131,12],
     [12,236,176]
 ];
 
@@ -56,7 +57,8 @@ this.aBeats.unshift([//Adds at start of this.aBeats
     aColor[1], //Green
     aColor[2], //Blue
     this.frameTimestamp,//When did this beat start
-    0//How long since this beat started
+    0,//How long since this beat started
+    index%10
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
