@@ -127,6 +127,7 @@
     beginLoadingSong(0);
 
     lights = new Lights({
+      serverURL: "ws://192.168.1.106:7890",
       lagAdjustment: -0.025,
       layoutURL: "data/shield.json",
       onconnecting: function() {

@@ -9,7 +9,7 @@ this.aBeats.unshift([//Adds at start of this.aBeats
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 Lights.prototype.beatgen_64 = function(index) {
@@ -23,7 +23,7 @@ this.aBeats.unshift([ //Adds at start of this.aBeats
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 Lights.prototype.beatgen_random = function(index) {
@@ -37,7 +37,7 @@ this.aBeats.unshift([//Adds at start of this.aBeats
 ]);
 
 this.aBeats = this.aBeats.slice(0, 6); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 Lights.prototype.beatBankColors = [
@@ -62,7 +62,7 @@ this.aBeats.unshift([//Adds at start of this.aBeats
 ]);
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 
@@ -80,7 +80,7 @@ if(index % 2 === 0) //Every second beat make it blue
 this.aBeats.unshift([r, g, b, this.frameTimestamp, 0]); //Adds at start of this.aBeats
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 Lights.prototype.beatgen_hsv_cycle = function(index) {
@@ -91,7 +91,7 @@ aColour[4] = 0; //How long since this beat started
 this.aBeats.unshift(aColour); //Adds at start of this.aBeats
 
 this.aBeats = this.aBeats.slice(0, 20); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };
 
 Lights.prototype.beatgen_hsv_random = function(index) {
@@ -102,5 +102,5 @@ aColour[4] = 0; //How long since this beat started
 this.aBeats.unshift(aColour); //Adds at start of this.aBeats
 
 this.aBeats = this.aBeats.slice(0, 20); //Make sure this.aBeats not too big
-this.iBeatLength = (60.0 / this.analysis.features.BPM); //How long is a beat
+this.iBeatLength = (60.0 / this.BPM); //How long is a beat
 };

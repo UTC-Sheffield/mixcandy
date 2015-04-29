@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8">
+      <link rel="stylesheet" href="main.css" type="text/css">
+    </head>
+    <body>
+      <div id="controls">
+        Beat Generator : <select id="beatgen"></select>
+        Pattern : <select id="pattern"></select>    
+        <button id="usecode">Use Code</button>
+      </div>
+      <div id="launchpad"></div>
+      <div id="ledStatus"></div>
+      <div id="musicStatus"></div>
+      <div id="midiStatus"></div>
+      
+      <div id="livecode">
+        <h2><span class="beatgen">Beat Generator Code</span><span class="pattern">Light Pattern Code</span></h2>
+        
+        <div id="editor"></div>
+        <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="ace-builds/src-min-noconflict/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/dawn");
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.getSession().setUseWrapMode(false);
+            editor.setShowPrintMargin(false);
+            editor.setFontSize(16);
+        </script>
+        
+        <div class="beatgen">The Beat Generator Code is for controlling the aBeats array<br>
+        The code gets called when there is a beat in the music and allows us to build up a collection of 
+        colours for the light patterns to base their calculations on.<br> 
+        Each beat is represented as an array :-
+        <pre>[ red (0-255), green (0-255), blue (0-255), timestamp (seconds since 01/01/1970), beatssince 
+        (0-10 number which gets bigger over time for fades etc) ]</pre>
+        this.aBeats.unshift( adds the array to the start of the list of colours
+        
+        </div>
+        <div class="pattern">Light Pattern Code is for calculating the red, green and blue of each indivual point of light 
+        (led or colour block in the simulator). <br>
+        It needs to return an array with 3 integer numbers (0-255) [red, green, blue]  ([0,0,0] = black [255,255,255] = white and [255,0,0] = red)
+        We have aPoint which is the 3D postion of the light [x,y,z] <br>
+        The this.aBeats array which has a colour and some timing info for each recent beat. [r,g,b,timestamp, beatssince]
+        </div>
+        
+      </div>
+    
+      <canvas id="sim" width="240" height="400"></canvas>
+      <canvas width="320px" height="30px" id="test" style="background-color: black;"></canvas>
+      
+      <script src="js/lib/jquery-2.1.1.min.js"></script>
+      <script src="js/hsv.js"></script>
+      <script src="js/lights.js"></script>
+      <script src="js/rgb.js"></script>
+      <script src="js/beatgen.js"></script>
+      <script src="js/mic.js"></script>  
+    
+    </body>
+</html>

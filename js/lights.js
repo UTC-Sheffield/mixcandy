@@ -37,6 +37,8 @@ var Lights = function (o) {
     self.beatGenerator = o.beatGenerator || "beatgen_256";
     
     self.useSimulator = o.useSimulator || true;
+    self.BPM = o.BPM || 120;
+    
     
     sourceExtra( self[self.lightPattern].toSource());
     editing = "pattern";
@@ -115,10 +117,9 @@ Lights.prototype.setAnalysis = function(analysis) {
     this.analysis = analysis;
 
     if (analysis) {
-        this.particleLifespan = 2 * (60.0 / this.analysis.features.BPM);
-    } else {
-        this.particleLifespan = 1.0;
+        this.BPM = this.analysis.features.BPM;
     }
+    this.particleLifespan = 2 * (60.0 / this.BPM);
 
     this.resetSong();
 };
@@ -164,7 +165,7 @@ Lights.prototype.connect = function() {
 
     self.status = "connecting";
     
-        console.log("self.useSimulator =", self.useSimulator);
+    console.log("self.useSimulator =", self.useSimulator);
     if(self.useSimulator)
     {
         self._animationLoop();
@@ -253,6 +254,7 @@ Lights.prototype.renderLights = function() {
     var dest = 4;
     if(this.aBeats.length > 0)
     {
+        // TODO : fade things out even if no analysis
         if (this.analysis) {
             this.aBeats = this.aBeats.map(function(aBeat){
                 var iTime = this.frameTimestamp - aBeat[3];
