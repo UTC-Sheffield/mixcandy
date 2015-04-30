@@ -20,7 +20,8 @@ $(document).ready(function(){
     var output = null;
 
     lights = new Lights({
-      serverURL: "ws://10.101.230.13:7890",
+      serverURL: "ws://"+window.location.hostname+":7890",
+      //serverURL: "ws://10.101.230.13:7890",
       //serverURL: "ws://192.168.1.106:7890",
       lagAdjustment: -0.025,
       layoutURL: "data/shield.json",
