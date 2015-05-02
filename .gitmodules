@@ -1,6 +1,0 @@
-[submodule "fadecandy"]
-	path = fadecandy
-	url = https://github.com/scanlime/fadecandy.git
-[submodule "static/ace-builds"]
-	path = static/ace-builds
-	url = https://github.com/ajaxorg/ace-builds.git
