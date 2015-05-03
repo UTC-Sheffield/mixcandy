@@ -23,6 +23,7 @@ $(document).ready(function(){
       serverURL: "ws://"+window.location.hostname+":7890",
       //serverURL: "ws://10.101.230.13:7890",
       //serverURL: "ws://192.168.1.106:7890",
+      useMic:true,
       lagAdjustment: -0.025,
       layoutURL: "data/shield.json",
       onconnecting: function() {
