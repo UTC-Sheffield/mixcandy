@@ -33,7 +33,8 @@ this.aBeats.unshift([//Adds at start of this.aBeats
     Math.round(Math.random()*255), //Green
     Math.round(Math.random()*255), //Blue
     this.frameTimestamp,//When did this beat start
-    0//How long since this beat started
+    0,//How long since this beat started
+    0
 ]);
 
 this.aBeats = this.aBeats.slice(0, 6); //Make sure this.aBeats not too big
@@ -77,7 +78,7 @@ if(index % 2 === 0) //Every second beat make it blue
     b = 255;
 }
 
-this.aBeats.unshift([r, g, b, this.frameTimestamp, 0]); //Adds at start of this.aBeats
+this.aBeats.unshift([r, g, b, this.frameTimestamp, 0, 0]); //Adds at start of this.aBeats
 
 this.aBeats = this.aBeats.slice(0, 10); //Make sure this.aBeats not too big
 this.iBeatLength = (60.0 / this.BPM); //How long is a beat
@@ -87,6 +88,7 @@ Lights.prototype.beatgen_hsv_cycle = function(index) {
 var aColour = hsv((index % 20)/20, 1, 1);
 aColour[3] = this.frameTimestamp; //When did this beat start
 aColour[4] = 0; //How long since this beat started
+aColour[5] = 0;
 
 this.aBeats.unshift(aColour); //Adds at start of this.aBeats
 
@@ -98,6 +100,7 @@ Lights.prototype.beatgen_hsv_random = function(index) {
 var aColour = hsv(Math.random(), 1, 1);
 aColour[3] = this.frameTimestamp; //When did this beat start
 aColour[4] = 0; //How long since this beat started
+aColour[5] = 0; 
 
 this.aBeats.unshift(aColour); //Adds at start of this.aBeats
 
