@@ -37,6 +37,7 @@ var Lights = function (o) {
     self.beatGenerator = o.beatGenerator || "beatgen_256";
     
     self.useSimulator = o.useSimulator || true;
+    self.useMic = o.useMic || false;
     self.BPM = o.BPM || 120;
     
     
@@ -165,7 +166,6 @@ Lights.prototype.connect = function() {
 
     self.status = "connecting";
     
-    console.log("self.useSimulator =", self.useSimulator);
     if(self.useSimulator)
     {
         self._animationLoop();
@@ -255,7 +255,7 @@ Lights.prototype.renderLights = function() {
     if(this.aBeats.length > 0)
     {
         // TODO : fade things out even if no analysis
-        if (this.analysis) {
+        if (this.analysis || this.useMic) {
             this.aBeats = this.aBeats.map(function(aBeat){
                 var iTime = this.frameTimestamp - aBeat[3];
                 var fDur = Math.min( iTime / this.iBeatLength, 10);
