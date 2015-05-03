@@ -118,7 +118,7 @@ return [r, g, b];
 //(the % means it can't pick a beat before its made)
 Lights.prototype.rgb_circle = function(aPoint) {
 var dist = Math.round(Math.sqrt(Math.pow(aPoint[0] - 2.5, 2) +
-Math.pow(aPoint[1] - (this.aBeats[0][5]*2)+0.5, 2)));
+Math.pow(aPoint[1] - (this.aBeats[0][5]*2)-7.5, 2))); //[0][5] breaks sometimes but i can't find 
 
 var aBeat = this.aBeats[dist % this.aBeats.length]; 
 
