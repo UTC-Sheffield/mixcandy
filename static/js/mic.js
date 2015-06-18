@@ -79,7 +79,62 @@ $(document).ready(function(){
             lights.beatGenerator = "newbeatgen";
         }
     };
+    
+    var bPartyMode = false;
+    var iPartyTimer = false;
+    
+    var nextPartyStep = function() {
+        var aPatterns = lights.getRgbGen();
+        var ePattern = $("#pattern");
+        var iCurrPattern = aPatterns.indexOf(ePattern.val());
+        
+        iCurrPattern ++;
+        if(iCurrPattern < aPatterns.length) {
+        // Changing
+        } else {
+            iCurrPattern = 0;
+            var aBeatGens = lights.getBeatGen();
+            var eBeatGen = $("#beatgen");
+            var iCurrBeatGen = aBeatGens.indexOf(eBeatGen.val());
+            iCurrBeatGen ++
             
+            if(iCurrBeatGen < aBeatGens.length) {
+                
+            } else {
+                iCurrBeatGen = 0;
+            }
+            eBeatGen.val(aBeatGens[iCurrBeatGen]);
+            lights.beatGenerator = "beatgen_"+aBeatGens[iCurrBeatGen];
+            sourceExtra(lights[lights.beatGenerator].toSource());
+            editing = "beatgen";
+            $(".beatgen").show();
+            $(".pattern").hide();
+        }
+        
+        ePattern.val(aPatterns[iCurrPattern]);
+        lights.lightPattern = "rgb_"+aPatterns[iCurrPattern];
+        sourceExtra(lights[lights.lightPattern].toSource());
+        editing = "pattern";
+        $(".beatgen").hide();
+        $(".pattern").show();
+        
+        window.setTimeout( nextPartyStep, Math.round(Math.random() * 20000) + 30000);
+    };
+    
+    document.getElementById("party").onclick = function(evt){
+        if(bPartyMode) {
+            bPartyMode = false;
+            window.clearTimeout(iPartyTimer);
+            document.getElementById("party").innerHTML = "Party Mode";
+        } else {
+            document.getElementById("party").innerHTML = "Exit Party Mode";
+            bPartyMode = true;
+            nextPartyStep();
+        }
+        
+    };
+    
+    
     var max_level_L = 0;
 	var old_level_L = 0;
 	var cnvs = document.getElementById("test");
