@@ -118,7 +118,7 @@ $(document).ready(function(){
         $(".beatgen").hide();
         $(".pattern").show();
         
-        window.setTimeout( nextPartyStep, Math.round(Math.random() * 20000) + 30000);
+        iPartyTimer = window.setTimeout( nextPartyStep, Math.round(Math.random() * 2000) + 3000);
     };
     
     document.getElementById("party").onclick = function(evt){
