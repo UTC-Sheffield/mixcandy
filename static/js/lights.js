@@ -55,6 +55,20 @@ var Lights = function (o) {
     // Download layout file before connecting
     $.getJSON(this.layoutURL, function(data) {
         self.layout = data;
+        self.layout_corners = self.layout.reduce(function(previousValue, currentValue){
+          return {
+            "min":[
+              Math.min(previousValue.min[0], currentValue.point[0],
+              Math.min(previousValue.min[1], currentValue.point[1],
+              Math.min(previousValue.min[2], currentValue.point[2]
+            ],
+            "min":[
+              Math.max(previousValue.max[0], currentValue.point[0],
+              Math.max(previousValue.max[1], currentValue.point[1],
+              Math.max(previousValue.max[2], currentValue.point[2]
+            ]};
+        }, {"min":[0,0,0], "max":[0,0,0]});
+        
         self.connect();
     });
 };
