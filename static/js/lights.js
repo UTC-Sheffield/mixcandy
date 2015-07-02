@@ -55,23 +55,57 @@ var Lights = function (o) {
     // Download layout file before connecting
     $.getJSON(this.layoutURL, function(data) {
         self.layout = data;
-        self.layout_corners = self.layout.reduce(function(previousValue, currentValue){
+        self.layout_stats = self.layout.reduce(function(previousValue, currentValue){
           return {
             "min":[
-              Math.min(previousValue.min[0], currentValue.point[0],
-              Math.min(previousValue.min[1], currentValue.point[1],
-              Math.min(previousValue.min[2], currentValue.point[2]
+              Math.min(previousValue.min[0], currentValue.point[0]),
+              Math.min(previousValue.min[1], currentValue.point[1]),
+              Math.min(previousValue.min[2], currentValue.point[2])
             ],
-            "min":[
-              Math.max(previousValue.max[0], currentValue.point[0],
-              Math.max(previousValue.max[1], currentValue.point[1],
-              Math.max(previousValue.max[2], currentValue.point[2]
-            ]};
-        }, {"min":[0,0,0], "max":[0,0,0]});
+            "max":[
+              Math.max(previousValue.max[0], currentValue.point[0]),
+              Math.max(previousValue.max[1], currentValue.point[1]),
+              Math.max(previousValue.max[2], currentValue.point[2])
+            ],
+            "sum":[
+              previousValue.sum[0]+ currentValue.point[0],
+              previousValue.sum[1]+ currentValue.point[1],
+              previousValue.sum[2]+ currentValue.point[2]
+            ]
+          };
+        }, {"min":[0,0,0], "max":[0,0,0], "sum":[0,0,0]});
         
+        self.layout_stats.centroid = [
+          self.layout_stats.sum[0] / self.layout.length,
+          self.layout_stats.sum[1] / self.layout.length,
+          self.layout_stats.sum[2] / self.layout.length
+        ];
+        
+        
+          console.log("self.layout_stats =", self.layout_stats);
         self.connect();
     });
 };
+
+Lights.prototype.distanceFromCentreX = function(pos) {
+ return  Math.floor(Math.abs(pos - this.layout_stats.centroid[0]));
+}
+
+Lights.prototype.distanceFromCentreY = function(pos) {
+ return  Math.floor(Math.abs(pos - this.layout_stats.centroid[1]));
+}
+
+Lights.prototype.distanceFromCentreZ = function(pos) {
+ return  Math.floor(Math.abs(pos - this.layout_stats.centroid[2]));
+}
+
+
+Lights.prototype.distanceFromCentre = function(aPoint) { //Only doing X and Y should do Z as well
+  return Math.floor(Math.sqrt(Math.pow(aPoint[0] - this.layout_stats.centroid[0], 2) +
+Math.pow(aPoint[1] - this.layout_stats.centroid[1], 2)));
+ 
+}
+
 
 Lights.prototype.getBeatGen = function() {
     var aFuncs = [];

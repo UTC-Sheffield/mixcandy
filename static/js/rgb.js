@@ -26,8 +26,7 @@ return [r, g, b];
 };
 
 Lights.prototype.rgb_lauren_skye = function(aPoint) {
-var aBeatForEachColumn = [2,1,0,0,1,2];
-var iColumn = aBeatForEachColumn[aPoint[0]]  % this.aBeats.length;
+var iColumn = this.distanceFromCentreX(aPoint[0]);
 var aBeat = this.aBeats[iColumn];
 
 var r = aBeat[0];
@@ -51,8 +50,7 @@ return [r, g, b];
 
 
 Lights.prototype.rgb_center_fade = function(aPoint) {
-var aBeatForEachColumn = [2,1,0,0,1,2];
-var iColumn = aBeatForEachColumn[aPoint[0]]  % this.aBeats.length;
+var iColumn = this.distanceFromCentreX(aPoint[0]);
 var aBeat = this.aBeats[iColumn];
 
 var r = Math.round(Math.max(0, aBeat[0] * (4 - aBeat[4] ) / 4));
@@ -64,8 +62,7 @@ return [r, g, b];
 
 
 Lights.prototype.rgb_frozen = function(aPoint) {
-var aBeatForEachColumn = [2,1,0,0,1,2];
-var iColumn = aBeatForEachColumn[aPoint[0]]  % this.aBeats.length;
+var iColumn = this.distanceFromCentreX(aPoint[0]);
 var aBeat = this.aBeats[iColumn];
 var iWobble = Math.sin((aPoint[1]+aBeat[4] )/10 * Math.PI) * 64;
 
@@ -78,9 +75,8 @@ return [r, g, b];
 
 Lights.prototype.rgb_centre_noise = function(aPoint) {
 
-var aOut = [2,1,0,0,1,2];
-var iRow = aOut[aPoint[0]]  % this.aBeats.length;
-var aBeat = this.aBeats[iRow];
+var iColumn = this.distanceFromCentreX(aPoint[0]);
+var aBeat = this.aBeats[iColumn];
 var iWobble = Math.round(Math.random() * 64)-32;
 
 var r = Math.max(0, Math.min(255, aBeat[0] + iWobble));
@@ -102,8 +98,7 @@ return [r, g, b];
 };
 
 Lights.prototype.rgb_fadedown = function(aPoint) {
-var aBeatForEachColumn = [2,1,0,0,1,2];
-var iColumn = aBeatForEachColumn[aPoint[0]]  % this.aBeats.length;
+var iColumn = this.distanceFromCentreX(aPoint[0]);
 var aBeat = this.aBeats[iColumn];
 
 var r = Math.round(aBeat[0] * (1-(aPoint[1]/30)));
@@ -117,9 +112,7 @@ return [r, g, b];
 //pick the beat for light column (X aPoint[0])
 //(the % means it can't pick a beat before its made)
 Lights.prototype.rgb_circle = function(aPoint) {
-var dist = Math.round(Math.sqrt(Math.pow(aPoint[0] - 2.5, 2) +
-Math.pow(aPoint[1] - (this.aBeats[0][5]*2)-7.5, 2))); //[0][5] breaks sometimes but i can't find 
-
+var dist = this.distanceFromCentre(aPoint);
 var aBeat = this.aBeats[dist % this.aBeats.length]; 
 
 var r = aBeat[0]; //Red
