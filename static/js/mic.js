@@ -1,141 +1,140 @@
 function sourceExtra(sCode) {
-        var aStr = sCode.split("\n");
-        aStr.pop();
-        aStr.shift();
-        editor.setValue(aStr.join("\n"));
-    }
-    foundBeat = 0;
-    var microphone;
+  var aStr = sCode.split("\n");
+  aStr.pop();
+  aStr.shift();
+  editor.setValue(aStr.join("\n"));
+}
+
+foundBeat = 0;
+var microphone;
     
 $(document).ready(function(){        
-    // Asynchronously loaded things
-    var song, analysis, lights;
-    
-    // Song playback state; we have to keep track of this ourselves
-    var isPlaying = false;
-    var isPaused = false;
-    
-    // Globally scoped data shared with MIDI callbacks
-    var m = null;
-    var output = null;
+  // Asynchronously loaded things
+  var song, lights;
+  
+  // Song playback state; we have to keep track of this ourselves
+  var isPlaying = false;
+  var isPaused = false;
+  
+  // Globally scoped data shared with MIDI callbacks
+  var m = null;
+  var output = null;
 
-    lights = new Lights({
-      serverURL: "ws://"+window.location.hostname+":7890",
-      //serverURL: "ws://10.101.230.13:7890",
-      //serverURL: "ws://192.168.1.106:7890",
-      useMic:true,
-      lagAdjustment: -0.025,
-      layoutURL: "data/shield.json",
-      onconnecting: function() {
-          $('#ledStatus').text("Connecting to Fadecandy LED server...");
-      },
-      onconnected: function() {
-          $('#ledStatus').text("Connected to Fadecandy LED server");
-          this.useSimulator = false;
-      },
-      onerror: function() {
-          $('#ledStatus').text("Error connecting to LED server");
-      },
-      lightPattern: $("#pattern").val(),
-      beatGenerator:$("#beatgen").val()
-    });
+  lights = new Lights({
+    serverURL: "ws://"+window.location.hostname+":7890",
+    //serverURL: "ws://10.101.230.13:7890",
+    //serverURL: "ws://192.168.1.106:7890",
+    useMic:true,
+    lagAdjustment: -0.025,
+    layoutURL: "data/shield.json",
+    onconnecting: function() {
+      $('#ledStatus').text("Connecting to Fadecandy LED server...");
+    },
+    onconnected: function() {
+      $('#ledStatus').text("Connected to Fadecandy LED server");
+      this.useSimulator = false;
+    },
+    onerror: function() {
+      $('#ledStatus').text("Error connecting to LED server");
+    },
+    lightPattern: $("#pattern").val(),
+    beatGenerator:$("#beatgen").val()
+  });
 
-    
-    
-    var editing = "pattern";
-    
-    lights.getRgbGen().forEach(function(funcname) {
-        $('#pattern').append(new Option(funcname, funcname));
-    });
-    lights.getBeatGen().forEach(function(funcname) {
-        $('#beatgen').append(new Option(funcname, funcname));
-    });
-    
-    
-    document.getElementById("pattern").onchange = function(evt){
-        lights.lightPattern = "rgb_"+evt.target.value;
-        sourceExtra(lights[lights.lightPattern].toSource());
-        editing = "pattern";
-        $(".beatgen").hide();
-        $(".pattern").show();
-    };
-    
-    
-    document.getElementById("beatgen").onchange = function(evt){
-        lights.beatGenerator = "beatgen_"+evt.target.value;
-        sourceExtra(lights[lights.beatGenerator].toSource());
-        editing = "beatgen";
-        $(".beatgen").show();
-        $(".pattern").hide();
-    };
+  var editing = "pattern";
+  
+  lights.getRgbGen().forEach(function(funcname) {
+    $('#pattern').append(new Option(funcname, funcname));
+  });
+  lights.getBeatGen().forEach(function(funcname) {
+    $('#beatgen').append(new Option(funcname, funcname));
+  });
+  
+  
+  document.getElementById("pattern").onchange = function(evt){
+    lights.lightPattern = "rgb_"+evt.target.value;
+    sourceExtra(lights[lights.lightPattern].toSource());
+    editing = "pattern";
+    $(".beatgen").hide();
+    $(".pattern").show();
+  };
+  
+  
+  document.getElementById("beatgen").onchange = function(evt){
+    lights.beatGenerator = "beatgen_"+evt.target.value;
+    sourceExtra(lights[lights.beatGenerator].toSource());
+    editing = "beatgen";
+    $(".beatgen").show();
+    $(".pattern").hide();
+  };
 
-    document.getElementById("usecode").onclick = function(evt){
-        var script = editor.getValue();
-        if (editing === "pattern") {
-            lights.newpattern = new Function("aPoint", script);
-            lights.lightPattern = "newpattern";
-        } else {
-            lights.newbeatgen = new Function("index", script);
-            lights.beatGenerator = "newbeatgen";
-        }
-    };
+  document.getElementById("usecode").onclick = function(evt){
+    var script = editor.getValue();
+    if (editing === "pattern") {
+      lights.newpattern = new Function("aPoint", script);
+      lights.lightPattern = "newpattern";
+    } else {
+      lights.newbeatgen = new Function("index", script);
+      lights.beatGenerator = "newbeatgen";
+    }
+  };
+  
+  var bPartyMode = false;
+  var iPartyTimer = false;
+  
+  var nextPartyStep = function() {
+    var aPatterns = lights.getRgbGen();
+    var ePattern = $("#pattern");
+    var iCurrPattern = aPatterns.indexOf(ePattern.val());
     
-    var bPartyMode = false;
-    var iPartyTimer = false;
+    iCurrPattern ++;
+    if(iCurrPattern < aPatterns.length) {
+      // Changing
+    } else {
+      iCurrPattern = 0;
+      var aBeatGens = lights.getBeatGen();
+      var eBeatGen = $("#beatgen");
+      var iCurrBeatGen = aBeatGens.indexOf(eBeatGen.val());
+      iCurrBeatGen += 1;
+      
+      if(iCurrBeatGen < aBeatGens.length) {
+          
+      } else {
+        iCurrBeatGen = 0;
+      }
+      eBeatGen.val(aBeatGens[iCurrBeatGen]);
+      lights.beatGenerator = "beatgen_"+aBeatGens[iCurrBeatGen];
+      sourceExtra(lights[lights.beatGenerator].toSource());
+      editing = "beatgen";
+      $(".beatgen").show();
+      $(".pattern").hide();
+    }
     
-    var nextPartyStep = function() {
-        var aPatterns = lights.getRgbGen();
-        var ePattern = $("#pattern");
-        var iCurrPattern = aPatterns.indexOf(ePattern.val());
-        
-        iCurrPattern ++;
-        if(iCurrPattern < aPatterns.length) {
-        // Changing
-        } else {
-            iCurrPattern = 0;
-            var aBeatGens = lights.getBeatGen();
-            var eBeatGen = $("#beatgen");
-            var iCurrBeatGen = aBeatGens.indexOf(eBeatGen.val());
-            iCurrBeatGen ++
-            
-            if(iCurrBeatGen < aBeatGens.length) {
-                
-            } else {
-                iCurrBeatGen = 0;
-            }
-            eBeatGen.val(aBeatGens[iCurrBeatGen]);
-            lights.beatGenerator = "beatgen_"+aBeatGens[iCurrBeatGen];
-            sourceExtra(lights[lights.beatGenerator].toSource());
-            editing = "beatgen";
-            $(".beatgen").show();
-            $(".pattern").hide();
-        }
-        
-        ePattern.val(aPatterns[iCurrPattern]);
-        lights.lightPattern = "rgb_"+aPatterns[iCurrPattern];
-        sourceExtra(lights[lights.lightPattern].toSource());
-        editing = "pattern";
-        $(".beatgen").hide();
-        $(".pattern").show();
-        
-        iPartyTimer = window.setTimeout( nextPartyStep, Math.round(Math.random() * 20000) + 30000);
-    };
+    ePattern.val(aPatterns[iCurrPattern]);
+    lights.lightPattern = "rgb_"+aPatterns[iCurrPattern];
+    sourceExtra(lights[lights.lightPattern].toSource());
+    editing = "pattern";
+    $(".beatgen").hide();
+    $(".pattern").show();
     
-    document.getElementById("party").onclick = function(evt){
-        if(bPartyMode) {
-            bPartyMode = false;
-            window.clearTimeout(iPartyTimer);
-            document.getElementById("party").innerHTML = "Party Mode";
-        } else {
-            document.getElementById("party").innerHTML = "Exit Party Mode";
-            bPartyMode = true;
-            nextPartyStep();
-        }
-        
-    };
-    
-    
-    var max_level_L = 0;
+    iPartyTimer = window.setTimeout( nextPartyStep, Math.round(Math.random() * 20000) + 30000);
+  };
+  
+  document.getElementById("party").onclick = function(evt){
+      if(bPartyMode) {
+          bPartyMode = false;
+          window.clearTimeout(iPartyTimer);
+          document.getElementById("party").innerHTML = "Party Mode";
+      } else {
+          document.getElementById("party").innerHTML = "Exit Party Mode";
+          bPartyMode = true;
+          nextPartyStep();
+      }
+      
+  };
+  
+  
+  var max_level_L = 0;
 	var old_level_L = 0;
 	var cnvs = document.getElementById("test");
 	var cnvs_cntxt = cnvs.getContext("2d");
@@ -178,10 +177,14 @@ $(document).ready(function(){
 				instant_L = Math.max( instant_L, old_level_L -0.008 );
 				
 				if(bOldMax && !bCurrentlyMax) { // Falling
-				    //console.log("Falling");
-                    foundBeat ++;
-                    //console.log("foundBeat =", foundBeat);
-                    lights[lights.beatGenerator](foundBeat);				    
+          //console.log("Falling");
+          foundBeat ++;
+          //console.log("foundBeat =", foundBeat);
+          try {
+            lights[lights.beatGenerator](foundBeat);
+          }	catch (err) {
+            console.error(err);
+          }
 				}
 				
 				if(old_level_L > instant_L)

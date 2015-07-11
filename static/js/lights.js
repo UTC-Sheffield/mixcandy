@@ -41,7 +41,7 @@ var Lights = function (o) {
     self.BPM = o.BPM || 120;
     
     
-    sourceExtra( self[self.lightPattern].toSource());
+    sourceExtra( self[self.lightPattern].toSource() );
     editing = "pattern";
     $(".beatgen").hide();
     $(".pattern").show();
@@ -82,36 +82,6 @@ Lights.prototype.getRgbGen = function() {
         }
     }
     return aFuncs;
-};
-
-Lights.prototype.moodTable = {
-    Peaceful:      { valence: 0/4, energy: 0/4 },
-    Easygoing:     { valence: 0/4, energy: 1/4 },
-    Upbeat:        { valence: 0/4, energy: 2/4 },
-    Lively:        { valence: 0/4, energy: 3/4 },
-    Excited:       { valence: 0/4, energy: 4/4 },
-    Fun:           { valence: 0/4, energy: 4/4 },
-    Tender:        { valence: 1/4, energy: 0/4 },
-    Romantic:      { valence: 1/4, energy: 1/4 },
-    Empowering:    { valence: 1/4, energy: 2/4 },
-    Stirring:      { valence: 1/4, energy: 3/4 },
-    Rowdy:         { valence: 1/4, energy: 4/4 },
-    Sentimental:   { valence: 2/4, energy: 0/4 },
-    Sophisticated: { valence: 2/4, energy: 1/4 },
-    Sensual:       { valence: 2/4, energy: 2/4 },
-    Fiery:         { valence: 2/4, energy: 3/4 },
-    Energizing:    { valence: 2/4, energy: 4/4 },
-    Melancholy:    { valence: 3/4, energy: 0/4 },
-    Blue:          { valence: 3/4, energy: 0/4 },  // Not sure if this is right
-    Cool:          { valence: 3/4, energy: 1/4 },
-    Yearning:      { valence: 3/4, energy: 2/4 },
-    Urgent:        { valence: 3/4, energy: 3/4 },
-    Defiant:       { valence: 3/4, energy: 4/4 },
-    Somber:        { valence: 4/4, energy: 0/4 },
-    Gritty:        { valence: 4/4, energy: 1/4 },
-    Serious:       { valence: 4/4, energy: 2/4 },
-    Brooding:      { valence: 4/4, energy: 3/4 },
-    Aggressive:    { valence: 4/4, energy: 4/4 }
 };
 
 Lights.prototype.setAnalysis = function(analysis) {
@@ -266,7 +236,14 @@ Lights.prototype.renderLights = function() {
         
         for (var led = 0; led < layout.length; led++) {
             var p = layout[led].point;
-            var aRGB = this[this.lightPattern](p);
+            
+            var aRGB = [0,0,0];
+            
+            try{
+              aRGB = this[this.lightPattern](p);
+            } catch (err) {
+              console.error(err);
+            }
             
             if (this.status === "connected") {
                 packet[dest++] = aRGB[0];
@@ -286,5 +263,3 @@ Lights.prototype.renderLights = function() {
         }
     }
 };
-
-
