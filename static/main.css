@@ -4,7 +4,7 @@ body { background: black; color: white;}
 
 #livecode {
     position: absolute;
-    right:300px;
+    left:300px;
     width: 700px;
     height: 300px;
 }
@@ -18,4 +18,12 @@ body { background: black; color: white;}
 #sim {
    width: 240px;
    height: 400px;
+}
+
+#test{
+  background-color: black;
+  left: 0;
+  position: absolute;
+  top: 450px;
+  width: 300px;
 }

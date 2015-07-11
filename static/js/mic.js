@@ -65,7 +65,7 @@ $(document).ready(function(){
     },
     onconnected: function() {
       $('#ledStatus').text("Connected to Fadecandy LED server");
-      this.useSimulator = false;
+      //this.useSimulator = false;
     },
     onerror: function() {
       $('#ledStatus').text("Error connecting to LED server");
