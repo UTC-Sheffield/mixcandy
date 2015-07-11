@@ -242,7 +242,8 @@ Lights.prototype.renderLights = function() {
             try{
               aRGB = this[this.lightPattern](p);
             } catch (err) {
-              console.error(err);
+              AddError(err);
+              //console.log("err.name =", err.name, "err.lineNumber =", err.lineNumber, "err.message =", err.message);
             }
             
             if (this.status === "connected") {

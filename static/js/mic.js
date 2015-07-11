@@ -5,6 +5,39 @@ function sourceExtra(sCode) {
   editor.setValue(aStr.join("\n"));
 }
 
+var oErrors = {};
+var aErrors = [];  
+var AddError = function(err){
+  var sErrHash = err.name + err.lineNumber;
+  if( ! oErrors.hasOwnProperty(sErrHash) ) {
+  
+    oErrors[sErrHash] = true;
+    aErrors.push({
+      type:   "error",
+      row:    err.lineNumber - 1,
+      col: 0,
+      raw: err.name +" "+ err.message,
+      text: err.message
+    });
+    //console.log("oErrors["+sErrHash+"] =", oErrors[sErrHash]);
+    //var annot = editor.getSession().getAnnotations();
+    //        this.oExercise.oExecuter.setAnnotations(annot);
+    editor.getSession().setAnnotations(aErrors);
+    
+  }
+};
+
+/*editor.getSession().on("changeAnnotation", function(){
+    var annot = editor.getSession().getAnnotations();
+    console.log("annot =", annot);
+});*/
+
+var ClearErrors = function(){
+    oErrors = {};
+    aErrors = {};
+};
+
+
 foundBeat = 0;
 var microphone;
     
@@ -183,7 +216,8 @@ $(document).ready(function(){
           try {
             lights[lights.beatGenerator](foundBeat);
           }	catch (err) {
-            console.error(err);
+            AddError(err);
+            //console.log("err.name =", err.name, "err.lineNumber =", err.lineNumber, "err.message =", err.message);
           }
 				}
 				
