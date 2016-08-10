@@ -21,11 +21,11 @@
         
         <div id="editor"></div>
         <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-        <script src="ace-builds/src-min-noconflict/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+        <script src="ace-builds/src-min-noconflict/mode-python.js" type="text/javascript" charset="utf-8"></script>
         <script>
             var editor = ace.edit("editor");
             editor.setTheme("ace/theme/dawn");
-            editor.getSession().setMode("ace/mode/javascript");
+            editor.getSession().setMode("ace/mode/python");
             editor.getSession().setUseWrapMode(false);
             editor.setShowPrintMargin(false);
             editor.setFontSize(16);
