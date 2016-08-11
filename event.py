@@ -1,93 +1,70 @@
 #!/usr/bin/env python
 
-import signal,  opc, time, math, random, json
+import signal,  opc, time, math, random, json, types
 from threading import Timer
 
 file = open('static/data/shield.json', 'r')
-
 layout = json.loads(file.read())
 numLEDs = len(layout)
 
 client = opc.Client('localhost:7890')
 
-global pixels, frame, colours, MethodWanted
+global pixels, frame, colours
 pixels = [ (0, 0, 0) ] * numLEDs
 frame=0
-
 colours = [{"red":255, "green":0, "blue":0}];
 
-colourindex = 0
+import position_colours, pixel_renderer
+    
+Rend = pixel_renderer.pixel_renderer();  
+PosCol = position_colours.position_colours();
 
-class renderer:
-  def render1(self, (col, row, depth)):
-    red = 255 - (row * 8)
-    green = abs(64 * (frame % 8) - 255)
-    blue = abs(64 * (abs(col - 3)))
-    return (red, green, blue)
-
-  def render2(self, (col, row, depth)):
-    step = (col + frame) % 3
-    if( step == 0):
-      return (255, 0, 0)
-    if(step == 1):
-      return (0, 255, 0)
-    if(step == 2):
-      return (0, 0, 255)
-
-  def render4(self, (col, row, depth)):
-    index = abs(3 - col) % len(colours)
-    colour = colours[index]
-    #print (index, colour)
-    return (colour["red"], colour["green"], colour["blue"])
-      
-Rend = renderer();  
-
-
-import types
-
-
-funcText = """def render3(self, (col, row, depth)):
+Rend.addMethod("twinkle", """
   twinkle = random.randint(0,200)
   return (255, twinkle, twinkle )
-"""
+""")
 
-exec(funcText)
-Rend.render3 = types.MethodType( render3, Rend )
+PosCol.addMethod( "horizontal_centre2", """
+    index = abs(3 - col) % len(colours)
+    colour = colours[index]
+    return colour
+""")
 
-funcNum = 1
-MethodWanted = "render1";
+PosCol.addMethod( "horizontal_left2", """
+    index = col % len(colours)
+    colour = colours[index]
+    return colour  
+""")
 
-delay = 0.1
-
+delay = 0.1 # Time between frames in seconds
 
 def doFrame():
-  global frame, MethodWanted, funcNum
+  global frame
   frame = frame + 1
+  #party mode type things
   if(frame % 50 == 0):
-    funcNum += 1
-    if(funcNum == 5):
-      funcNum = 1
-    MethodWanted = 'render'+str(funcNum)
-    print (funcNum, MethodWanted)
-    
+    Rend.next()
+  if(frame % 300 == 0):
+    PosCol.next()
+  
+  Rend.setFrame(frame)
+  
   for pixel in range(numLEDs):
-    pixels[pixel] = getattr(Rend, MethodWanted)(layout[pixel]['point'])
+    colour =   PosCol.getColour(layout[pixel]['point'], colours)
+    pixels[pixel] = Rend.render(layout[pixel]['point'], colour)
   client.put_pixels(pixels)
   t = Timer(delay, doFrame)
-  t.start()
-  #time.sleep(delay)
-  #doFrame()
+  t.start() #start the timer, dealying until the next frame. but none blocking
   
-#doFrame()
-t = Timer(delay, doFrame)
-t.start()  # after 30 seconds, "hello, world" 
+doFrame() #Do the first render
 
+#Sound sensor code
+# TODO : add microphone / audio code
 import explorerhat
 
-def handle(self):
+def handle(self): # TODO : add a colour of the right type to the colour bank
   colours.insert(0, {"red":random.randint(0,255), "green":random.randint(0,255), "blue":random.randint(0,255)})
-  print(len(colours))
   
-explorerhat.input.one.pressed(handle)
+explorerhat.input.one.pressed(handle) # when the sound sensor picks something up
 
-explorerhat.pause()
+explorerhat.pause() # ??
