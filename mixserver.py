@@ -9,9 +9,10 @@ numLEDs = len(layout)
 
 client = opc.Client('localhost:7890')
 
-global pixels, frame, colours
+global paused, pixels, frame, colours
 pixels = [ (0, 0, 0) ] * numLEDs
 frame=0
+paused = False
 colours = [{"red":255, "green":0, "blue":0}];
 
 import position_colours, pixel_renderer
@@ -38,8 +39,12 @@ PosCol.addMethod( "horizontal_left2", """
 
 delay = 0.1 # Time between frames in seconds
 
+
 def doFrame():
   global frame
+  if (paused) :
+    return
+    
   frame = frame + 1
   #party mode type things
   if(frame % 50 == 0):
@@ -83,7 +88,16 @@ class MixServer(object):
     def index(self):
         raise cherrypy.HTTPRedirect("/index.html")
         
-    
+    @cherrypy.expose
+    def pause(self):
+      global paused
+      paused = True
+      
+    @cherrypy.expose
+    def restart(self):
+      global paused
+      paused = False
+      doFrame()
     
 if __name__ == '__main__':
     cherrypy.quickstart(MixServer(), config="app.conf")
