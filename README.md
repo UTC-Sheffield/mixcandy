@@ -17,3 +17,15 @@ Credits
 =======
 
 Code is now only very loosley based on stuff written by the guys at scanlime, who built a live performance tool that combines music analysis, MIDI controller input, and real-time LED light visuals.
+
+
+## install
+
+* clone this repo
+cd mixcandy
+git submodule init
+git submodule update
+sudo pip install cherrypy
+ifconfig
+./start.sh
+type the ip address in to url bar on a seperate device
