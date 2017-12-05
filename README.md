@@ -22,10 +22,10 @@ Code is now only very loosley based on stuff written by the guys at scanlime, wh
 ## install
 
 * clone this repo
-cd mixcandy
-git submodule init
-git submodule update
-sudo pip install cherrypy
-ifconfig
-./start.sh
-type the ip address in to url bar on a seperate device
+* cd mixcandy
+* git submodule init
+* git submodule update
+* sudo pip install cherrypy
+* ifconfig
+* ./start.sh
+* type the ip address in to url bar on a seperate device
